@@ -1,0 +1,90 @@
+spring:
+  application:
+    name: telegram-news-bot
+#########################
+#       DATABASE
+#########################
+  datasource:
+    url: jdbc:postgresql://localhost:5432/avtonom_telegram_bot
+    username: giybat_user
+    password: '1234'
+    driver-class-name: org.postgresql.Driver # Buni qo'shish kerak
+  jpa:
+    hibernate:
+      ddl-auto: update      # Ishga tushganda jadval avtomatik yaratiladi
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect # Dialect o'zgartirildi
+        format_sql: true
+
+
+# ===== Telegram Bot Configuration =====
+# Haqiqiy qiymatlar environment variable orqali o'qiladi
+bot:
+  token: <<token>>
+  username: avtonomnew_bot
+  admin_id: ${TELEGRAM_ADMIN_ID:442569765}
+  channel:
+    id: -1001699184575
+
+# ===== Google Gemini API =====
+gemini:
+  api:
+    key: <<AIAPIKey>>
+    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="
+  timeout:
+    seconds: 30
+  delay-ms: 10000
+
+# ===== RSS Feed Sources =====
+# Yangi manbalar qo'shish uchun bu ro'yxatni kengaytirish mumkin
+rss:
+  feeds:
+#    - url: https://feeds.bbci.co.uk/sport/football/rss.xml
+#      name: BBC Sport Football (Jahon va Yevropa futboli)
+#    - url: https://www.espn.com/espn/rss/soccer/news
+#      name: ESPN FC (Xalqaro futbol, mashhur yulduzlar haqida)
+#    - url: https://feeds.bbci.co.uk/news/world/rss.xml
+#      name: BBC World
+#    - url: http://rss.cnn.com/rss/edition_world.rss
+#      name: CNN World
+#    - url: https://uzreport.news/feed/rss/uz
+#      name: UzReport
+    - url: https://www.gazeta.uz/oz/rss/
+      name: Gazeta.uz
+#    - url: https://qalampir.uz/rss
+#      name: Qalampir.uz
+#    - url: https://www.aljazeera.com/xml/rss/all.xml
+#      name: Al Jazeera
+  fetch:
+    timeout-seconds: 15
+    max-entries-per-feed: 2      # Har bir feed'dan maksimal olinadigan yangilik soni
+
+# ===== Scheduler Configuration =====
+scheduler:
+  news:
+    # Har 1 soatda ishga tushadi (cron: soniya daqiqa soat kun oy hafta)
+    cron: "0 0 * * * *"
+    # Ilova ishga tushganda darhol bir marta bajarish (ms)
+    initial-delay-ms: 10000
+
+publisher:
+  delay-between-posts-ms: 7000
+
+# ===== Logging =====
+logging:
+  level:
+    uz.newsbot: DEBUG
+    org.telegram: INFO
+    org.springframework: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# ===== Pollinations AI (bepul rasm generatsiya) =====
+pollinations:
+  base-url: https://image.pollinations.ai/prompt/
+  image-width: 1024
+  image-height: 576
+server:
+  port: 8082
